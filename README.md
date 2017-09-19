@@ -1,4 +1,3 @@
-<br>
 [**CLICK HERE**](https://reyvaz.github.io/CLT-LLN-Simulations/clt_lln.html)
 to see full analysis in html
 
