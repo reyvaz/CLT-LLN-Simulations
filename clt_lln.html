@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Prepared by Reynaldo Vazquez" />
+
+
+<title>Central Limit Theorem and Law of Large Numbers via Exponential and Poisson Simulations</title>
+
+<script src="clt_lln_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="clt_lln_files/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<script src="clt_lln_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="clt_lln_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="clt_lln_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="clt_lln_files/navigation-1.1/tabsets.js"></script>
+<link href="clt_lln_files/highlightjs-1.1/default.css" rel="stylesheet" />
+<script src="clt_lln_files/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Central Limit Theorem and Law of Large Numbers via Exponential and Poisson Simulations</h1>
+<h4 class="author"><em>Prepared by Reynaldo Vazquez</em></h4>
+<h4 class="date"><em>4/24/2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#exponential-distribution-simulation">Exponential Distribution Simulation</a></li>
+<li><a href="#law-of-large-numbers-on-the-exponential-simulation">Law of Large Numbers on the Exponential Simulation</a></li>
+<li><a href="#central-limit-theorem">Central Limit Theorem</a></li>
+<li><a href="#clt-on-poisson-distribution">CLT on Poisson Distribution</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>According to the <strong>Central Limit Theorem (CLT)</strong>, in most cases, if we sample from a population using a sufficiently large sample size, the mean of the samples will mimic a Gaussian distribution, even if the underlying variable is not Gaussian.</p>
+<p>And according to the <strong>Law of Large Numbers (LLN)</strong>, the mean of the results obtained from a sufficiently large number of draws, should approximate the expected value (i.e. the theoretical mean), and tends to become closer as more draws are performed.</p>
+<p>The following produces reproducible examples in R using exponential and Poisson simulations to illustrate both, the LLN and the CLT.</p>
+<pre class="r"><code>#Required packages:
+require(ggplot2)
+require(knitr)</code></pre>
+<div id="exponential-distribution-simulation" class="section level3">
+<h3>Exponential Distribution Simulation</h3>
+<p>First we’ll start with the exponential distribution,</p>
+<pre class="r"><code># Set exponential distribution parameters and calculate theoretical statistics:
+set.seed(380)
+lambda  &lt;- 0.2
+n       &lt;- 1000 # this sets the sample size
+theor_mean &lt;- 1/lambda
+theor_sd   &lt;- 1/lambda
+theor_var  &lt;- theor_sd^2</code></pre>
+<pre class="r"><code># Simulate exponential distribution and calculate sample statistics
+exp_simu  &lt;- rexp(n, lambda)
+simu_sd   &lt;- round(sd(exp_simu),3)
+simu_var  &lt;- round(var(exp_simu),3)
+simu_mean &lt;- round(mean(exp_simu), 3)</code></pre>
+<p>For the exponential distribution, the theoretical mean, variance, and standard deviation are given by <span class="math inline">\(1/\lambda\)</span>, 1/<span class="math inline">\(\lambda^2\)</span>, 1/<span class="math inline">\(\lambda\)</span>, respectively. From our parameters, we have that the theoretical mean = 1/<span class="math inline">\(\lambda\)</span> = 5, the theoretical variance = 1/<span class="math inline">\(\lambda^2\)</span> = 25, and the theoretical standard deviation = 1/<span class="math inline">\(\lambda\)</span> = 5.</p>
+<p>From the simulation, we have:<br />
+Simulation mean = 4.997<br />
+Simulation variance = 24.565<br />
+Simulation standard error = 4.956</p>
+<p>The three are close to their theoretical counterparts, this should be case for large enough n (the sample size), as it is here for n = 1000.</p>
+</div>
+<div id="law-of-large-numbers-on-the-exponential-simulation" class="section level3">
+<h3>Law of Large Numbers on the Exponential Simulation</h3>
+<p>The following will do an illustration of the law of large numbers. We will start by calculating the sample mean as we increase the sample size one by one, starting from sample size 1 up to 1000.</p>
+<pre class="r"><code># Plot simulated mean as number of draws increases vs. theoretical mean 
+mean_accum_sample &lt;- NULL
+for (i in 1 : n) {mean_accum_sample &lt;- c(mean_accum_sample, mean(exp_simu[1:i]))}
+ggplot() + aes(x = 1:n, y = mean_accum_sample) + 
+    theme_bw() +
+    geom_line(col = &quot;steelblue&quot;) +
+    ylab(&quot;Mean&quot;) + 
+    xlab(&quot;Sample Size&quot;) +
+    ggtitle(&quot;Fig 1. Simulated Mean as Sample Size Increases&quot;) +
+    geom_hline(yintercept = theor_mean) +
+    geom_text(aes(y=(theor_mean - .3), label=&quot;theoretical mean = 5&quot;, x=700), size=4)</code></pre>
+<p><img src="clt_lln_files/figure-html/LLN-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Fig 1. Shows how the sample mean gets closer to the theoretical mean as the sample size of the exponential distribution simulation increases. This is what is meant by the LLN. Right around a sample size of 200, the sample mean of our simulation starts to look like the theoretical mean.</p>
+</div>
+<div id="central-limit-theorem" class="section level3">
+<h3>Central Limit Theorem</h3>
+<p>Before illustrating the CLT, let’s take a look at how the exponential distrbution looks.</p>
+<pre class="r"><code># Histogram of simulated exponential distribution
+ggplot() + aes(exp_simu) +         
+    geom_histogram(bins=13, color = &quot;red3&quot;, fill = &quot;red3&quot;, alpha = 0.85)+
+    theme_bw() +
+    ylab(&quot;Count&quot;) + 
+    xlab(&quot;Value&quot;) +
+    ggtitle(&quot;Fig 2. Exponential Simulation Distribution &quot;) +
+    geom_vline(xintercept = theor_mean, col = &quot;blue4&quot;) +
+    geom_text(aes(x = (theor_mean + .77), label = &quot;theoretical mean = 5&quot;, y = 90),
+              col = &quot;white&quot;, angle = 90, size = 4) +
+    geom_vline(xintercept = simu_mean, col = &quot;green4&quot;) +
+    geom_text(aes(x = (simu_mean - 0.85), label=paste(&quot;simulation mean =&quot;, simu_mean), y = 102), 
+              col = &quot;white&quot;, angle = 90, size = 4)</code></pre>
+<p><img src="clt_lln_files/figure-html/expDist-1.png" width="672" style="display: block; margin: auto;" /> Figure 2. Shows the shape of our exponentially distributed simulated variable. Because our sample is large enough, the simulated mean occurs about the sample mean as expected by the LLN. If we increase the sample size, this shape will remain approximately the same, it will just look more like its theoretical couterpart.</p>
+<p>So now we’ll move on to the CLT. To do so, we’ll simulate 1100 averages of 40 exponentials. The sample size n = 1000 is replaced by sample size n = 40.</p>
+<pre class="r"><code># get 1000 exponential samples of size 40 each, and compute the mean of each sample
+means &lt;- NULL
+n     &lt;- 40    # sample size (again)
+ns    &lt;- 1100  # number of samples
+for (i in 1 : ns) means &lt;- c(means, mean(rexp(n, lambda)))
+means_var      &lt;- (1/lambda)^2/n
+sim_means_mean &lt;- round(mean(means), 3)
+sim_means_var  &lt;- round(var(means), 3)
+sim_means_se   &lt;- sd(means)</code></pre>
+<p>Theoretically, the variance of the means is <span class="math inline">\(1/\sigma^{2/n}\)</span> (in our distributions <span class="math inline">\(\sigma\)</span> is given by <span class="math inline">\(\lambda\)</span>) which gives variance of the means = 0.625. In our simulation, the variance of the means is 0.64, which is quite close to it’s theoretical counterpart.</p>
+<p>What this means is that, according to the CLT, the means of our exponential distribution samples will mimic a Gaussian distribution, with mean 5.015, which is close to <span class="math inline">\(\lambda\)</span> and a variance of 0.64. The following figure will illustrate this.</p>
+<pre class="r"><code>gaussLine = function(x, mean, sd, ns, bw){
+    # will calculate the Gaussian points to superimpose in the plot
+    dnorm(x = x, mean = mean, sd = sd)*ns*bw
+    }</code></pre>
+<pre class="r"><code># plot histogram of sample means to compare to Gaussian distribution
+nbins    &lt;- 15
+binwidth &lt;- (max(means) - min(means))/nbins
+means    &lt;- data.frame(means)
+ggplot(means) + aes(x = means) + theme_bw() + 
+        geom_histogram(bins=nbins, color = &quot;steelblue&quot;, fill=&quot;steelblue&quot;, alpha = 0.85)+
+        ylab(&quot;Count&quot;) + xlab(&quot;Mean of Sample&quot;) +
+        ggtitle(&quot;Fig 3. Distribution of Exponential Samples&#39; Means vs. Gaussian&quot;) +
+        geom_vline(xintercept=theor_mean, col = &quot;red4&quot;) +
+        geom_text(aes(x = (theor_mean -.13), label = paste(&quot;theoretical mean =&quot;, theor_mean), y = 91),
+                  col=&quot;white&quot;, angle=90, size=3.5) +
+        geom_vline(xintercept = sim_means_mean, col = &quot;green4&quot;) +
+        geom_text(aes( x =(sim_means_mean +.12), label=paste(&quot;sample mean =&quot;, sim_means_mean), y = 93), 
+                  col=&quot;white&quot;, angle=90, size=3.5) +
+        stat_function(fun = gaussLine, 
+                args = c(mean = sim_means_mean, sd = sim_means_se, ns = ns, bw = binwidth))</code></pre>
+<p><img src="clt_lln_files/figure-html/expCLTplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Fig 3. Shows the shape of the distribution of the 1000 means from the size 40 samples. It can be seen that it approximates a Gaussian distribution, this is what we expect from the CLT.</p>
+<p>By contrasting Fig 2 and Fig 3, we can see that, although the distribution of the simulation sample is not by itself Gaussian distributed, the distribution of the means of sufficient samples approximates a Gaussian distribution.</p>
+</div>
+<div id="clt-on-poisson-distribution" class="section level3">
+<h3>CLT on Poisson Distribution</h3>
+<p>The following illustrates the CLT on a Poisson simulation</p>
+<pre class="r"><code># adjusting parameters for the Poisson simulation
+lambda &lt;- 3
+n      &lt;- 1000 # sample size
+pois_simu  &lt;- rpois(n, lambda)
+theor_mean &lt;- lambda
+simu_mean &lt;- round(mean(pois_simu), 3)
+ggplot() + aes(pois_simu) +         
+    geom_histogram(bins=12, color = &quot;red3&quot;, fill = &quot;red3&quot;, alpha = 0.85)+
+    theme_bw() +
+    ylab(&quot;Count&quot;) + 
+    xlab(&quot;Value&quot;) +
+    ggtitle(&quot;Fig 4. Poisson Simulation Distribution &quot;) +
+    geom_vline(xintercept = theor_mean, col = &quot;blue4&quot;) +
+    geom_text(aes(x = (theor_mean + .3), label=paste(&quot;theoretical mean =&quot;, theor_mean), y = 84), 
+              col = &quot;white&quot;, angle = 90, size = 4) +
+    geom_vline(xintercept = simu_mean, col = &quot;green4&quot;) +
+    geom_text(aes(x = (simu_mean - 0.4), label=paste(&quot;simulation mean =&quot;, simu_mean), y = 92), 
+              col = &quot;white&quot;, angle = 90, size = 4)</code></pre>
+<p><img src="clt_lln_files/figure-html/poisDist-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Fig 4. Shows the distribution of our simulated Poisson variable. Again, our sample is large enough for the LLN to take on and get a sample mean close to its theoretical counterpart.</p>
+<pre class="r"><code># get 2000 Poisson samples of size 50 each, and compute the mean of each sample
+set.seed(380)
+means  &lt;- NULL
+lambda &lt;- 3
+n      &lt;- 50    # sample size
+ns     &lt;- 2000  # number of samples
+for (i in 1 : ns) {means &lt;- c(means, mean(rpois(n, lambda)))}
+sim_means_mean &lt;- round(mean(means), 3)
+sim_means_var  &lt;- round(var(means), 3)
+sim_means_se   &lt;- sd(means)</code></pre>
+<pre class="r"><code># plot the distribution of the Poisson sample means
+nbins    &lt;- 15
+binwidth &lt;- (max(means) - min(means))/nbins
+means    &lt;- data.frame(means)
+ggplot(means) + aes(x = means) + theme_bw() + 
+        geom_histogram(bins=nbins, color = &quot;steelblue&quot;, fill=&quot;steelblue&quot;, alpha = 0.85)+
+        ylab(&quot;Count&quot;) + xlab(&quot;Mean of Sample&quot;) +
+        ggtitle(&quot;Fig 5. Distribution of Poisson Samples&#39; Means vs. Normal&quot;) +
+        geom_vline(xintercept=lambda, col = &quot;red4&quot;) +
+        geom_text(aes(x = (lambda +.05), label = paste(&quot;theoretical mean =&quot;, lambda), y = 150), 
+                  col=&quot;white&quot;, angle=90, size=3.5) +
+        geom_vline(xintercept = sim_means_mean, col = &quot;green4&quot;) +
+        geom_text(aes( x =(sim_means_mean -.06), label= paste (&quot;sample mean =&quot;, sim_means_mean), y = 152), 
+                  col=&quot;white&quot;, angle=90, size=3.5) +
+        stat_function(fun = gaussLine, 
+                args = c(mean = sim_means_mean, sd = sim_means_se, ns = ns, bw = binwidth))</code></pre>
+<p><img src="clt_lln_files/figure-html/poisCLTplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Fig 5. Shows that the distribution of the simulated Poisson sample means approximates a normal, as expected by the CLT. That is despite that the underlying variable itself is not normal.</p>
+<div id="conclusion" class="section level4">
+<h4>Conclusion</h4>
+<p>The analysis above shows reproducible examples illustrating the Law of Large Numbers using an exponential distribution simulation, and the Central Limit Theorem using exponential y Poisson sumulations. We saw how when a sample gets sufficiently large, its mean approaches its expected value (LLN). And how the distribution of the sample means, specifically for the exponential y Poisson distributions here, mimics a normal distribution.</p>
+<p><br><br></p>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
