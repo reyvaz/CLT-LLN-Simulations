@@ -233,21 +233,3 @@ when a sample gets sufficiently large, its mean approaches its expected value (L
 of the sample means, specifically for the exponential y Poisson distributions here, mimics a normal distribution.
 
 <br><br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

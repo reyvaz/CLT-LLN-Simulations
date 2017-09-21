@@ -12,12 +12,11 @@ exponential and Poisson simulations in R.
 * To reproduce simply run the [clt_lln.Rmd](clt_lln.Rmd) script. 
 
 [GitHub Pages](https://reyvaz.github.io/CLT-LLN-Simulations/)  
-<br><br>
 
-<center>
+<br>
+<p align="center">
 <a href="https://reyvaz.github.io/CLT-LLN-Simulations/clt_lln.html" 
 rel="see html report">
-<img src="clt_lln_files/figure-html/expCLTplot-1.png" alt="Drawing" 
-style="width: 600px;"/></a>
-</center>
-<br><br>
+<img src="clt_lln_files/figure-html/expCLTplot-1.png" alt="Drawing" width = "550"></a>
+</p>
+<br>
